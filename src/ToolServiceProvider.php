@@ -25,6 +25,10 @@ class ToolServiceProvider extends ServiceProvider
         Nova::serving(function (ServingNova $event) {
             //
         });
+        $this->publishes([
+            __DIR__ . '/../config/nova-logify.php' => config_path('nova-logify.php')
+        ]);
+        $this->mergeConfigFrom(__DIR__ . '/../config/nova-logify.php', 'nova-logify');
     }
 
     /**
@@ -39,11 +43,11 @@ class ToolServiceProvider extends ServiceProvider
         }
 
         Nova::router(['nova', Authenticate::class, Authorize::class], 'nova-logify')
-            ->group(__DIR__.'/../routes/inertia.php');
+            ->group(__DIR__ . '/../routes/inertia.php');
 
         Route::middleware(['nova', Authorize::class])
             ->prefix('nova-vendor/nova-logify')
-            ->group(__DIR__.'/../routes/api.php');
+            ->group(__DIR__ . '/../routes/api.php');
     }
 
     /**
@@ -51,8 +55,5 @@ class ToolServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
-        //
-    }
+    public function register() {}
 }

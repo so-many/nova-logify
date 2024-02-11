@@ -16,6 +16,7 @@ class NovaLogify extends Tool
      */
     public function boot()
     {
+        info(__DIR__);
         Nova::script('nova-logify', __DIR__ . '/../dist/js/tool.js');
         Nova::style('nova-logify', __DIR__ . '/../dist/css/tool.css');
     }
