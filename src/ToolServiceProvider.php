@@ -2,6 +2,8 @@
 
 namespace SoMany\NovaLogify;
 
+use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
@@ -18,6 +20,7 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         $this->app->booted(function () {
             $this->routes();
         });
@@ -29,6 +32,15 @@ class ToolServiceProvider extends ServiceProvider
             __DIR__ . '/../config/nova-logify.php' => config_path('nova-logify.php')
         ]);
         $this->mergeConfigFrom(__DIR__ . '/../config/nova-logify.php', 'nova-logify');
+        $driverString = config('nova-logify.driver');
+        $driver = new FileDriver();
+        app()->singleton(DriverInterface::class, function () use ($driver) {
+            return $driver;
+        });
+
+        Event::listen(MessageLogged::class, function (MessageLogged $event) use ($driver) {
+            $driver->write($event);
+        });
     }
 
     /**

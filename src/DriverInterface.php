@@ -14,6 +14,8 @@ interface DriverInterface
 
     public function getAllLogs(): Collection;
 
+    public function getAllRotationLogs(): Collection;
+
     public function clearAllLogs(): void;
 
     public function tailLogs(int $lines): array;
