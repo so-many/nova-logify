@@ -1,7 +1,14 @@
-<template></template>
+<template>
+  <div class="logify-scoped">
+    <div :class="{ dark: dark }">
+      <Filters />
+    </div>
+  </div>
+</template>
 
-<script></script>
+<script setup>
+import { useDarkMode } from '../composables/useDarkMode';
+import Filters from '../components/Filters.vue';
 
-<style>
-/* Scoped Styles */
-</style>
+const dark = useDarkMode();
+</script>

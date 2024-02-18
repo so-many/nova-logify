@@ -96,7 +96,9 @@ class FileDriver implements DriverInterface
         $files = glob(storage_path('logs/logify_') . '*.log');
         $this->logs = collect([]);
         foreach ($files as $file) {
-            $this->logs = $this->logs->merge(file($file));
+            $this->readFileByLineAndModify($file, function (string $line) {
+                $this->logs->push($this->formatLogText($line));
+            });
         }
         return $this->logs;
     }
@@ -130,6 +132,23 @@ class FileDriver implements DriverInterface
     public function tailLogs(int $lines): array
     {
         return explode(PHP_EOL, $this->tailCustom($this->path, $lines));
+    }
+
+    public function formatLogText(string $text): mixed
+    {
+        $date = $this->getStringBetween($text, '[date-', ']');
+        $level = $this->getStringBetween($text, '[level-', ']');
+        $log = str_replace('[date-' . $date . '] [level-' . $level . '] ', '', $text);
+        $parsedLog = json_decode($log, true);
+        $message = $parsedLog['message'];
+        $context = $parsedLog['context'];
+
+        return new LogMessage(
+            level: $level,
+            message: $message,
+            context: $context,
+            date: Carbon::parse($date)
+        );
     }
 
     /**
@@ -177,5 +196,30 @@ class FileDriver implements DriverInterface
         }
         fclose($f);
         return trim($output);
+    }
+
+    public function readFileByLineAndModify($file, $callback)
+    {
+        $handle = fopen($file, "r");
+        if ($handle) {
+            while (($line = fgets($handle)) !== false) {
+                $callback($line);
+            }
+            fclose($handle);
+        } else {
+            throw new \Exception('Error reading file');
+        }
+    }
+
+    public function getStringBetween(string $string, string $start, string $end)
+    {
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        if ($ini == 0) {
+            return '';
+        }
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        return substr($string, $ini, $len);
     }
 }

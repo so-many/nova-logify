@@ -19,4 +19,6 @@ interface DriverInterface
     public function clearAllLogs(): void;
 
     public function tailLogs(int $lines): array;
+
+    public function formatLogText(string $text): mixed;
 }

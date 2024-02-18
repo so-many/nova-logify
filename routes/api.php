@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use SoMany\NovaLogify\Http\Controllers\LogifyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,6 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function (Request $request) {
 //     //
 // });
+Route::group(['controller' => LogifyController::class], function () {
+    Route::get('/', 'index');
+});

@@ -1,10 +1,10 @@
-let mix = require('laravel-mix')
+let mix = require('laravel-mix');
 
-require('./nova.mix')
+require('./nova.mix');
 
 mix
   .setPublicPath('dist')
   .js('resources/js/tool.js', 'js')
   .vue({ version: 3 })
-  .css('resources/css/tool.css', 'css')
-  .nova('so-many/nova-logify')
+  .css('resources/css/tool.css', 'css', [require('tailwindcss')])
+  .nova('so-many/nova-logify');
