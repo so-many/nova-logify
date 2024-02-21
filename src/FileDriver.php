@@ -96,8 +96,8 @@ class FileDriver implements DriverInterface
         $files = glob(storage_path('logs/logify_') . '*.log');
         $this->logs = collect([]);
         foreach ($files as $file) {
-            $this->readFileByLineAndModify($file, function (string $line) {
-                $this->logs->push($this->formatLogText($line));
+            $this->readFileByLineAndModify($file, function (string $line, int $lineCount) {
+                $this->logs->push($this->formatLogText($line, $lineCount));
             });
         }
         return $this->logs;
@@ -134,7 +134,7 @@ class FileDriver implements DriverInterface
         return explode(PHP_EOL, $this->tailCustom($this->path, $lines));
     }
 
-    public function formatLogText(string $text): mixed
+    public function formatLogText(string $text, int $line): mixed
     {
         $date = $this->getStringBetween($text, '[date-', ']');
         $level = $this->getStringBetween($text, '[level-', ']');
@@ -147,6 +147,7 @@ class FileDriver implements DriverInterface
             level: $level,
             message: $message,
             context: $context,
+            line: $line,
             date: Carbon::parse($date)
         );
     }
@@ -200,10 +201,12 @@ class FileDriver implements DriverInterface
 
     public function readFileByLineAndModify($file, $callback)
     {
+        $lineCount = 0;
         $handle = fopen($file, "r");
         if ($handle) {
             while (($line = fgets($handle)) !== false) {
-                $callback($line);
+                $lineCount++;
+                $callback($line, $lineCount);
             }
             fclose($handle);
         } else {

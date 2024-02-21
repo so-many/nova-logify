@@ -27,6 +27,11 @@ class LogMessage
     public $date;
 
     /**
+     * @var int
+     */
+    public $line;
+
+    /**
      * Create a new event instance.
      *
      * @param  string  $level
@@ -34,11 +39,12 @@ class LogMessage
      * @param  array  $context
      * @return void
      */
-    public function __construct($level, $message, array $context = [], $date = null)
+    public function __construct($level, $message, int $line, array $context = [], $date = null)
     {
         $this->level = $level;
         $this->message = $message;
         $this->context = $context;
+        $this->line = $line;
         $this->date = $date;
     }
 }

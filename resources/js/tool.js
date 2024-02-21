@@ -1,5 +1,10 @@
+import { useGet } from './composables/useGet';
 import { LOG_LEVELS } from './config/constants';
-import { LOG_LEVEL_INJECT_KEY, SEARCH_INJECT_KEY } from './config/keys';
+import {
+  LOGS_INJECT_KEY,
+  LOG_LEVEL_INJECT_KEY,
+  SEARCH_INJECT_KEY,
+} from './config/keys';
 import Tool from './pages/Tool';
 import { ref, readonly } from 'vue';
 /**
@@ -10,6 +15,7 @@ Nova.booting((app, store) => {
   Nova.inertia('NovaLogify', Tool);
   const search = ref('');
   const logLevels = ref(LOG_LEVELS);
+  const logs = useGet('/nova-vendor/nova-logify', [search, logLevels]);
 
   const updateSearch = (value) => {
     search.value = value;
@@ -31,4 +37,5 @@ Nova.booting((app, store) => {
     logLevels: readonly(logLevels),
     updateLogLevel,
   });
+  app.provide(LOGS_INJECT_KEY, readonly(logs.data));
 });
